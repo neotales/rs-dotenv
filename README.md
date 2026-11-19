@@ -2,6 +2,8 @@
 
 Parse dotenv text into source-ordered nodes while preserving the original document.
 
+By [x0craft](https://github.com/x0craft).
+
 [![Neotales](https://github.com/neotales/brand/raw/main/assets/logo.png)](https://github.com/neotales/rs-dotenv)
 
 <!-- badges: crates.io, docs.rs, CI. Add once the crate name and first version exist. -->
