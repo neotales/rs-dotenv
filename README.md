@@ -13,4 +13,4 @@ assert_eq!(assignment.value, "Neo Env");
 
 ## License
 
-MIT. See the workspace [LICENSE](../../LICENSE.md).
+MIT. See [LICENSE](LICENSE.md).

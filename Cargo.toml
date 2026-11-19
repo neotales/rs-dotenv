@@ -1,16 +1,26 @@
 [package]
 name = "neotales-dotenv"
 description = "Source-preserving dotenv document parsing with no I/O, no interpolation and no key policy"
-version = "0.0.0-alpha.1"
-edition.workspace = true
-rust-version.workspace = true
-license.workspace = true
-repository.workspace = true
+version = "0.0.0-alpha.0"
+edition = "2024"
+rust-version = "1.100"
+license = "MIT"
+repository = "https://github.com/neotales/rs-dotenv"
+authors = ["Neotales"]
 readme = "README.md"
 keywords = ["dotenv", "env", "parser", "configuration"]
 categories = ["parser-implementations", "config"]
 
-[dependencies]
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+missing_debug_implementations = "warn"
+unreachable_pub = "warn"
 
-[lints]
-workspace = true
+[lints.rustdoc]
+broken_intra_doc_links = "warn"
+private_intra_doc_links = "warn"
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
