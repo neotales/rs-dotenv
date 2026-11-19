@@ -1,6 +1,6 @@
 [package]
 name = "neotales-dotenv"
-description = "Source-preserving dotenv document parsing with no I/O, no interpolation and no key policy"
+description = "Parse, edit and write dotenv documents with no I/O, no interpolation and no key policy"
 version = "0.0.0-alpha.0"
 edition = "2024"
 rust-version = "1.100"
@@ -10,6 +10,9 @@ authors = ["x0craft"]
 readme = "README.md"
 keywords = ["dotenv", "env", "parser", "configuration"]
 categories = ["parser-implementations", "config"]
+
+[dependencies]
+indexmap = "2.12"
 
 [lints.rust]
 unsafe_code = "forbid"
