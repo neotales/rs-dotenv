@@ -484,6 +484,43 @@ fn add_variable_keeps_a_literal_unicode_escape_as_text() {
 }
 
 #[test]
+fn to_exports_prefixes_every_variable_and_leaves_to_string_alone() {
+    let mut document = Document::new();
+    document.add_variable("APP_NAME", "neotales");
+    document.add_exported_variable("DEBUG", "true");
+
+    assert_eq!(
+        document.to_exports(),
+        "export APP_NAME=neotales\nexport DEBUG=true"
+    );
+    assert_eq!(document.to_string(), "APP_NAME=neotales\nexport DEBUG=true");
+}
+
+#[test]
+fn to_exports_keeps_comments_quotes_and_blank_lines() {
+    let document = parse("# full\nexport KEY=\"value\" # note\n\nPLAIN=one\n");
+
+    assert_eq!(
+        document.to_exports(),
+        "# full\nexport KEY=\"value\" # note\n\nexport PLAIN=one\n"
+    );
+    assert_eq!(
+        document.to_string(),
+        "# full\nexport KEY=\"value\" # note\n\nPLAIN=one\n"
+    );
+}
+
+#[test]
+fn to_exports_keeps_an_inline_comment_on_the_exported_line() {
+    let mut document = Document::new();
+    document.add_variable("KEY", "value");
+    document.add_inline_comment("note");
+
+    assert_eq!(document.to_exports(), "export KEY=value # note");
+    assert_eq!(document.to_string(), "KEY=value # note");
+}
+
+#[test]
 fn parsed_document_writes_the_same_inline_comment_after_an_edit() {
     let mut document = parse("A=1 # keep me\n# full\nB=2\n");
     document.set("A", "10");

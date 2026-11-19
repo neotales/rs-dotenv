@@ -19,7 +19,7 @@ cargo add neotales-dotenv
 - 🧾 **Look a key up in a map.** `Document` keeps a map of keys to values in insertion order. `get` reads a value and `keys` lists the keys as they were added. A key that appears twice updates the map value and is listed once.
 - 📄 **Keep the elements in source order.** `nodes` returns blank lines, comments, variables, and invalid source in the order they appear; `len` and `at` walk that list by index. `to_string()` walks it to write the file back.
 - ✏️ **Change a document.** `set` replaces a value in place or appends a new key, and `merge` applies another document's keys in that document's order without copying its comments.
-- 🐚 **Keep a shell `export` prefix.** `export KEY=value` is the variable `KEY`, and `add_exported_variable` writes the prefix back. `export=value` is a variable whose key is `export`.
+- 🐚 **Keep a shell `export` prefix.** `export KEY=value` is the variable `KEY`, and `add_exported_variable` writes the prefix back. `export=value` is a variable whose key is `export`. `to_exports()` writes every variable line with the prefix, for a shell to source.
 - 💬 **Keep comments with the values.** An unquoted `#` ends the value and starts an inline comment, so `KEY=value # note` has the value `value`. `comments()` lists inline and full-line comments, and `to_string()` writes an inline comment back on the variable's line.
 - 🔤 **Keep value syntax visible.** A quoted value keeps its quote. Quoted values may span lines. `$NAME` stays literal. This crate does no I/O, interpolation, or key validation.
 - 📍 **Report malformed input.** `Document::first_invalid` returns the first parse message and its source span.
@@ -54,6 +54,27 @@ fn main() {
         document.to_string(),
         "# written by the readme sample\nAPP_NAME=neotales\nDEBUG=false"
     );
+}
+```
+
+## Export it for a shell 🐚
+
+`to_exports` writes the same text as `to_string()`, with `export` on every variable line. A
+variable that is already exported keeps its one prefix.
+
+```rust
+use neotales_dotenv::Document;
+
+fn main() {
+    let mut document = Document::new();
+    document.add_variable("APP_NAME", "neotales");
+    document.add_exported_variable("DEBUG", "true");
+
+    assert_eq!(
+        document.to_exports(),
+        "export APP_NAME=neotales\nexport DEBUG=true"
+    );
+    assert_eq!(document.to_string(), "APP_NAME=neotales\nexport DEBUG=true");
 }
 ```
 

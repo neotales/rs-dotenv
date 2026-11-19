@@ -283,6 +283,15 @@ impl Document {
         &self.map
     }
 
+    /// Returns the text `to_string()` writes, with `export` on every variable line.
+    ///
+    /// A variable that is already exported keeps its one prefix. Quotes, inline comments,
+    /// full-line comments, blank lines, and invalid source are written exactly as they are.
+    #[must_use]
+    pub fn to_exports(&self) -> String {
+        self.render(true)
+    }
+
     /// Returns assignments in source order, excluding the other node kinds.
     ///
     /// This is a low-level view of the element list. Use [`Document::keys`] and [`Document::get`]
@@ -301,6 +310,25 @@ impl Document {
             Node::Invalid { message, span, .. } => Some((message.as_str(), span)),
             Node::Blank { .. } | Node::Comment { .. } | Node::Assignment(_) => None,
         })
+    }
+
+    fn render(&self, export_all: bool) -> String {
+        let mut out = String::new();
+        for (position, node) in self.nodes.iter().enumerate() {
+            if position > 0 {
+                out.push('\n');
+            }
+            match node {
+                Node::Blank { .. } => {}
+                Node::Comment { text, .. } => push_comment(&mut out, text),
+                Node::Invalid { text, .. } => out.push_str(text),
+                Node::Assignment(assignment) => push_assignment(&mut out, assignment, export_all),
+            }
+        }
+        if self.trailing_newline && !self.nodes.is_empty() {
+            out.push('\n');
+        }
+        out
     }
 
     fn upsert(&mut self, key: &str, value: &str, quote: QuoteStyle, exported: bool) {
@@ -338,23 +366,9 @@ impl fmt::Display for Document {
     ///
     /// A variable is `KEY=value`, a quoted value keeps its quote, a full-line comment is
     /// `# text`, and an inline comment stays on its variable's line as ` # text`.
+    /// [`Document::to_exports`] writes the same text with `export` on every variable line.
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut out = String::new();
-        for (position, node) in self.nodes.iter().enumerate() {
-            if position > 0 {
-                out.push('\n');
-            }
-            match node {
-                Node::Blank { .. } => {}
-                Node::Comment { text, .. } => push_comment(&mut out, text),
-                Node::Invalid { text, .. } => out.push_str(text),
-                Node::Assignment(assignment) => push_assignment(&mut out, assignment),
-            }
-        }
-        if self.trailing_newline && !self.nodes.is_empty() {
-            out.push('\n');
-        }
-        formatter.write_str(&out)
+        formatter.write_str(&self.render(false))
     }
 }
 
@@ -683,8 +697,8 @@ fn push_comment(out: &mut String, text: &str) {
     }
 }
 
-fn push_assignment(out: &mut String, assignment: &Assignment) {
-    if assignment.exported {
+fn push_assignment(out: &mut String, assignment: &Assignment, export_all: bool) {
+    if assignment.exported || export_all {
         out.push_str("export ");
     }
     out.push_str(&assignment.key);
