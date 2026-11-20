@@ -1,7 +1,7 @@
 [package]
 name = "neotales-dotenv"
 description = "Parse, edit and write dotenv documents with no I/O, no interpolation and no key policy"
-version = "0.0.0-alpha.0"
+version = "0.0.0-alpha.1"
 edition = "2024"
 rust-version = "1.100"
 license = "MIT"
